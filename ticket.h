@@ -105,12 +105,15 @@ class Student
         vector<string> vectorize();
 
         void get_status(){
+            cout << endl;
+            cout << "-----------------Status-----------------" << endl;
             cout << "Name:" << name << endl;
             cout << "Plan:" << plan << endl;
             cout << "Available this week:" << weekly_available << endl;
             cout << "Available Today:" << daily_available << endl;
             cout << "Guest Swipes Available:"<< guest_swipes << endl;
             cout << "Dining dollars Available:" << dining_dollars << endl;
+            cout << "--------------Have a Good Day-----------" << endl << endl;
         }
 };
 
@@ -148,11 +151,9 @@ Student::Student(string wid,
             this->dining_dollars = stoi(dining_dollars);
 
             this->last_swipe = stoi(last_swipe);
-            cout << "This was the last swipe before: "<< last_swipe << endl;
 
             current_swipe = Date("now");
             int current_secs = current_swipe.getSecondsPassed();
-            cout << "The current time is: " << current_secs << endl;
 };
 
 
@@ -163,7 +164,6 @@ int Student::get_daily_available(){
 void Student::use_daily_available(){
     this->weekly_available--;
     this->daily_available--;
-    cout << "Swapping current swipe to last swipe" << endl;
     this->last_swipe = current_swipe;
 }
 
@@ -172,21 +172,11 @@ void Student::use_guest_swipes(){
 }
 
 void Student::use_dining_dollars(){
-    string which_meal;
-    which_meal = "breakfast";
     int charge;
-
-    if (which_meal == "breakfast"){
-        charge = breakfast_price;
-    } 
-    else if (which_meal == "lunch"){
-        charge = lunch_price;
-    }
-    else{
-        charge == dinner_price;
-    }
+    charge = charge_meal();
 
     dining_dollars -= charge;
+    cout << "Purchase of $" << charge << " was successfull." << endl;
 }
 
 void Student::set_weekly_swipes(){
@@ -203,6 +193,7 @@ void Student::set_weekly_swipes(){
 }
 
 void Student::set_daily_swipes(){
+    set_weekly_swipes();
     this->daily_available = 1;
 }
 
@@ -212,19 +203,19 @@ void Student::swipe(){
     int current_swipe_hr = current_swipe.getSecondsPassed();
 
     int difference = current_swipe_hr - last_swipe_hr;
-    cout << "Difference in Time: " << difference << endl;
+    //cout << "Difference in Time: " << difference << endl;
 
-    cout << "Currently swiped at: " <<current_swipe_hr << endl;
-    cout << "Last swiped at: " << last_swipe_hr << endl;
+    //cout << "Currently swiped at: " <<current_swipe_hr << endl;
+    //cout << "Last swiped at: " << last_swipe_hr << endl;
 
     if (difference >=60){
         set_daily_swipes();
-        cout << "Difference more than 60.. increasing available swipes.." << endl;
+        //cout << "Difference more than 60.. increasing available swipes.." << endl;
     }
 
     if ((get_daily_available()>0)){
         use_daily_available();
-        cout << "used one swipe" << endl;
+        cout << "Thank You. You are good to enter." << endl;
 
     }
     else{
@@ -237,7 +228,7 @@ void Student::swipe(){
         }
         else{
             cout << "Sorry, you will have to wait until next swipe time to re-enter the Fresh." << endl;
-            cout << "You can use your dining dollars to enter the Fresh. Do you want to use it? (yes/no)" << endl;
+            cout << "You can use your dining dollars to enter the Fresh. Do you want to use it? (yes/no):";
             cin >> response;
 
             if (response == "yes"){

@@ -50,8 +50,6 @@ void student_entrance(){
     int student_index;
 
     for (int i=0; i< size(student_data); i++){
-        cout << student_data[i][0] << endl;
-        cout << wid << endl;
 
         if (student_data[i][0] == wid){
             student_index = i;
@@ -83,6 +81,7 @@ void student_entrance(){
                                     dining_dollars,
                                     last_swipe);
         student.swipe();
+        student.get_status();
 
         row = student.vectorize();
         student_data.at(student_index) = row;
