@@ -5,11 +5,11 @@
 
 using namespace std;
 
-
 const int breakfast_price = 8;
 const int lunch_price = 12;
 const int dinner_price = 15;
 
+int charge_meal();
 
 class Date 
 {
@@ -22,6 +22,11 @@ class Date
             current_time = 0;
             local_time = localtime(&current_time);
         };
+
+        Date(int seconds){
+            current_time = seconds;
+            local_time = localtime(&current_time);
+        }
 
         Date(string now) {
             current_time = time(0);
@@ -37,6 +42,12 @@ class Date
         string getTime() {
             char time_buffer[9];
             strftime(time_buffer, sizeof(time_buffer), "%H:%M:%S", local_time);
+            return time_buffer;
+        }
+
+        string getHour(){
+            char time_buffer[4];
+            strftime(time_buffer, sizeof(time_buffer), "%H", local_time);
             return time_buffer;
         }
 
@@ -82,7 +93,6 @@ class Student
 
         void swipe();
 
-
         int get_daily_available();
 
         void use_daily_available();
@@ -91,6 +101,8 @@ class Student
 
         void set_daily_swipes();
         void set_weekly_swipes();
+
+        vector<string> vectorize();
 
         void get_status(){
             cout << "Name:" << name << endl;
@@ -102,29 +114,6 @@ class Student
         }
 };
 
-
-class Outsider
-{
-    private:
-        long cardnumber;
-        string uname;
-        Date curr_time;
-
-    public:
-        Outsider(long number, string name);
-        void make_purchase();
-};
-
-
-Outsider::Outsider(long number, string name){
-    cardnumber = number;
-    uname = name;
-}
-
-void Outsider::make_purchase(){
-    
-    cout << "Purchase made of some amount depending on the time...";
-}
 
 
 Student::Student(){
@@ -224,8 +213,8 @@ void Student::swipe(){
     int difference = current_swipe_hr - last_swipe_hr;
     cout << "Difference in Time: " << difference << endl;
 
-    cout << current_swipe_hr << endl;
-    cout << last_swipe_hr << endl;
+    cout << "Currently swiped at: " <<current_swipe_hr << endl;
+    cout << "Last swiped at: " << last_swipe_hr << endl;
 
     if (difference >=60){
         set_daily_swipes();
@@ -237,7 +226,7 @@ void Student::swipe(){
 
     }
     else{
-        cout << "Do you want to you Guest Swipe? (yes/no): ";
+        cout << "You do not have any available swipes at the moment. Do you want to you Guest Swipe? (yes/no): ";
         string response;
         cin >> response;
 
@@ -259,3 +248,39 @@ void Student::swipe(){
     }
 }
 
+
+
+class Outsider
+{
+    private:
+        long cardnumber;
+        string uname;
+        Date curr_time;
+
+    public:
+        Outsider(long number, string name){
+            cardnumber = number;
+            uname = name;
+        };
+        void make_purchase(){
+            int charged_amount = charge_meal();
+            cout << "Purchase made of $" <<charged_amount << endl;
+        };
+};
+
+
+int charge_meal(){
+    Date current_time = Date("now");
+    string hours = current_time.getHour();
+    int thour = stoi(hours);
+
+    if (thour<11){
+        return breakfast_price;
+    }
+    else if (thour >=11 && thour <4){
+        return lunch_price;
+    }
+    else{
+        return dinner_price;
+    }
+}

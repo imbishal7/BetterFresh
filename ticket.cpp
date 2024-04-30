@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
 #include <string>
 
 using namespace std;
@@ -16,8 +15,29 @@ vector <vector <string>> read_csv(string filename);
 void saveToFile(vector<vector<string>>& data, string filename);
 
 
-
 int main(){
+    char response = 'q';
+    do
+    {
+        cout << "Enter s for student, g for guest, & q to quit:";
+        cin >> response;
+
+        if (response == 's'){
+            student_entrance();
+        }
+        else if(response == 'g'){
+            guest_entrance();
+        }
+    }
+    while(response!='q');
+    
+
+    return 0;
+}
+
+
+
+void student_entrance(){
     string wid;
     cout << "Enter Your Student ID: ";
     cin >> wid;
@@ -27,61 +47,42 @@ int main(){
 
     string name, plan, weekly_available, daily_available, guest_swipes, dining_dollars, last_swipe;
 
+    int student_index;
 
-    for (vector<string> row : student_data){
-        if (row[0] == wid){
-            cout << "Match Found" << endl;
-            
-            name = row[1];
-            plan = row[2];
-            weekly_available = row[3];
-            daily_available = row[4];
-            guest_swipes = row[5];
-            dining_dollars = row[6];
-            last_swipe = row[7];
-
-
-            Student student = Student(  wid,
-                                        name,
-                                        plan,
-                                        weekly_available,
-                                        daily_available,
-                                        guest_swipes,
-                                        dining_dollars,
-                                        last_swipe);
-            student.get_status();
-
+    for (int i=0; i< sizeof(student_data); i++){
+        if (student_data[i][0] == wid){
+            student_index = i;
         }
-
-
         else{
-            cout << "Could not find the student with provided id." << endl;
+            student_index = -1;
         }
     }
 
-    /*
-    do{
-        cout << "Student or Guest (s/g): ";
-        string who;
-        cin >> who;
+    if (student_index != 0){
+        vector<string> row = student_data[student_index];
+        wid = row[0];
+        name = row[1];
+        plan = row[2];
+        weekly_available = row[3];
+        daily_available = row[4];
+        guest_swipes = row[5];
+        dining_dollars = row[6];
+        last_swipe = row[7];
 
-        if (who == "s"){
-            student_swipe();
-        }
-
-        else if (who == "g"){
-            guest_entrance(); 
-        }
-    }while(true);
-    */
+        Student student = Student(  wid,
+                                    name,
+                                    plan,
+                                    weekly_available,
+                                    daily_available,
+                                    guest_swipes,
+                                    dining_dollars,
+                                    last_swipe);
+        student.swipe();
+    }
+    else{
+        cout << "Student is not in the database." << endl;
+    }
     
-
-    return 0;
-}
-
-
-
-void student_entrance(){
 
 
 }
@@ -97,6 +98,7 @@ void guest_entrance(){
 
             Outsider(number,uname).make_purchase();
 }
+
 
 vector<vector<string>> read_csv(string filename){
     ifstream input_file(filename);
@@ -124,7 +126,6 @@ vector<vector<string>> read_csv(string filename){
     return data;
     
 }
-
 
 void saveToFile(vector<vector<string>>& data, string filename) {
     ofstream output_file(filename);
