@@ -57,7 +57,7 @@ class Date
             return weekdays[day_of_the_week];
         }
 
-        int getSecondsPassed() const {
+        int getSecondsPassed() {
             return current_time;
     }
 
@@ -147,9 +147,12 @@ Student::Student(string wid,
             this->guest_swipes = stoi(guest_swipes);
             this->dining_dollars = stoi(dining_dollars);
 
-            this->last_swipe = last_swipe;
+            this->last_swipe = stoi(last_swipe);
+            cout << "This was the last swipe before: "<< last_swipe << endl;
 
             current_swipe = Date("now");
+            int current_secs = current_swipe.getSecondsPassed();
+            cout << "The current time is: " << current_secs << endl;
 };
 
 
@@ -158,10 +161,10 @@ int Student::get_daily_available(){
 }
 
 void Student::use_daily_available(){
-    weekly_available--;
-    daily_available--;
-
-    last_swipe = Date("now");
+    this->weekly_available--;
+    this->daily_available--;
+    cout << "Swapping current swipe to last swipe" << endl;
+    this->last_swipe = current_swipe;
 }
 
 void Student::use_guest_swipes(){
@@ -191,21 +194,19 @@ void Student::set_weekly_swipes(){
 
     if (day == "Monday"){
         if (plan == "unlimited"){
-            weekly_available = 99;
+            this->weekly_available = 99;
         }
         else if (plan == "limited"){
-            weekly_available = 10;
+            this->weekly_available = 10;
         }
     }
 }
 
 void Student::set_daily_swipes(){
-    daily_available = 1;
+    this->daily_available = 1;
 }
 
 void Student::swipe(){
-
-    current_swipe = Date("now");
     
     int last_swipe_hr = last_swipe.getSecondsPassed();
     int current_swipe_hr = current_swipe.getSecondsPassed();
@@ -218,6 +219,7 @@ void Student::swipe(){
 
     if (difference >=60){
         set_daily_swipes();
+        cout << "Difference more than 60.. increasing available swipes.." << endl;
     }
 
     if ((get_daily_available()>0)){
@@ -248,6 +250,21 @@ void Student::swipe(){
     }
 }
 
+vector<string> Student::vectorize(){
+    string swid, sname, splan, sweekly_available, sdaily_available, sguest_swipes, sdining_dollars, slast_swipe;
+    vector <string> row;
+    swid = this->wid;
+    sname = this->name;
+    splan = this->plan;
+    sweekly_available = to_string(this->weekly_available);
+    sdaily_available = to_string(this->daily_available);
+    sguest_swipes = to_string(this->guest_swipes);
+    sdining_dollars = to_string(this->dining_dollars);
+    slast_swipe = to_string(this->last_swipe.getSecondsPassed());
+
+    row = {swid, sname, splan, sweekly_available, sdaily_available, sguest_swipes, sdining_dollars, slast_swipe};
+    return row;
+};
 
 
 class Outsider

@@ -49,17 +49,22 @@ void student_entrance(){
 
     int student_index;
 
-    for (int i=0; i< sizeof(student_data); i++){
+    for (int i=0; i< size(student_data); i++){
+        cout << student_data[i][0] << endl;
+        cout << wid << endl;
+
         if (student_data[i][0] == wid){
             student_index = i;
+            break;
         }
         else{
             student_index = -1;
         }
     }
 
-    if (student_index != 0){
+    if (student_index != -1){
         vector<string> row = student_data[student_index];
+
         wid = row[0];
         name = row[1];
         plan = row[2];
@@ -78,6 +83,10 @@ void student_entrance(){
                                     dining_dollars,
                                     last_swipe);
         student.swipe();
+
+        row = student.vectorize();
+        student_data.at(student_index) = row;
+        saveToFile(student_data, "student_data.csv");
     }
     else{
         cout << "Student is not in the database." << endl;
@@ -140,7 +149,7 @@ void saveToFile(vector<vector<string>>& data, string filename) {
             output_file << *it;
 
             if (it != line.end() - 1) {
-                output_file << ", ";
+                output_file << ",";
             }
         }
         output_file << endl;
