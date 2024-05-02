@@ -1,3 +1,11 @@
+/* ***************************************************************
+* Objectives/Description:
+* Input: Student or guest check-in. Student Id for students and card details for outsiders.
+* Output: Status of the account for students. Confirmation for purchase or entrance, or denial of entrance.
+* ***************************************************************
+*/
+
+
 #include <iostream>
 #include <fstream>
 #include <ctime>
@@ -11,6 +19,14 @@ const int dinner_price = 15;
 
 int charge_meal();
 
+
+/* *************************************************
+* Class Name: Date
+* Description: Atrributes to return date, time, day, etc.
+* Function Parameters: None, number of seconds, or any string.
+* What is returned, if anything: either date, time, day.
+* *************************************************
+*/
 class Date 
 {
     private:
@@ -118,7 +134,7 @@ class Student
 };
 
 
-
+//Default Constructor
 Student::Student(){
     wid = "w0000001";
     name = "Seymour";
@@ -133,6 +149,7 @@ Student::Student(){
     last_swipe = Date();
 }
 
+//Constructor for creating student from csv.
 Student::Student(string wid,
                  string name,
                  string plan,
@@ -157,20 +174,48 @@ Student::Student(string wid,
 };
 
 
+/* *************************************************
+* Function Name: get_daily_available
+* Function Description: returns the number of swipes available for the day
+* Function Parameters: NA
+* What is returned, if anything: int: number of swipes left.
+* *************************************************
+*/
 int Student::get_daily_available(){
     return daily_available;
 }
 
+/* *************************************************
+* Function Name: use_daily_available
+* Function Description: reduces the weekly and daily swipe limit and sets the time of last swiped with current swipe.
+* Function Parameters: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void Student::use_daily_available(){
     this->weekly_available--;
     this->daily_available--;
     this->last_swipe = current_swipe;
 }
 
+/* *************************************************
+* Function Name: use_guest_swipes
+* Function Description: reduces the number of guest swipes available
+* Function Parameters: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void Student::use_guest_swipes(){
     guest_swipes--;
 }
 
+/* *************************************************
+* Function Name: use_dining_dollars
+* Function Description: charges certain amount to the student using dining dollars available
+* Function Parameters:NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void Student::use_dining_dollars(){
     int charge;
     charge = charge_meal();
@@ -179,6 +224,13 @@ void Student::use_dining_dollars(){
     cout << "Purchase of $" << charge << " was successfull." << endl;
 }
 
+/* *************************************************
+* Function Name: set_weekly_swipes
+* Function Description: resets the available weekly swipes depending on the plan on each Monday.
+* Function Parameters: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void Student::set_weekly_swipes(){
     string day = current_swipe.getDayOfWeek();
 
@@ -192,11 +244,27 @@ void Student::set_weekly_swipes(){
     }
 }
 
+
+/* *************************************************
+* Function Name: set_daily_swipes
+* Function Description: sets the daily available swipe limit to one
+* Function Parameters: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void Student::set_daily_swipes(){
     set_weekly_swipes();
     this->daily_available = 1;
 }
 
+/* *************************************************
+* Function Name: swipe
+* Function Description: gives students to swipe their card(id number) and either allow or deny depending on their status.
+* Function Parameters: NA
+* Paramter type, name and use: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void Student::swipe(){
     
     int last_swipe_hr = last_swipe.getSecondsPassed();
@@ -213,7 +281,7 @@ void Student::swipe(){
         //cout << "Difference more than 60.. increasing available swipes.." << endl;
     }
 
-    if ((get_daily_available()>0)){
+    if ((get_daily_available()>0) && (weekly_available>0)){
         use_daily_available();
         cout << "Thank You. You are good to enter." << endl;
 
@@ -223,7 +291,8 @@ void Student::swipe(){
         string response;
         cin >> response;
 
-        if (response == "yes"){
+        if ((response == "yes") && (guest_swipes >0)){
+
             use_guest_swipes();
         }
         else{
@@ -231,7 +300,7 @@ void Student::swipe(){
             cout << "You can use your dining dollars to enter the Fresh. Do you want to use it? (yes/no):";
             cin >> response;
 
-            if (response == "yes"){
+            if ((response == "yes") && (dining_dollars >= charge_meal())){
                 use_dining_dollars();
             }
             else{
@@ -241,6 +310,14 @@ void Student::swipe(){
     }
 }
 
+/* *************************************************
+* Function Name: vectorize
+* Function Description: vectorizes the details for each Student.
+* Function Parameters: details of students
+* Paramter type, name and use: string: swid, sname, splan, sweekly_available, sdaily_available, sguest_swipes, sdining_dollars, slast_swipe
+* What is returned, if anything: vector
+* ************************************************
+*/
 vector<string> Student::vectorize(){
     string swid, sname, splan, sweekly_available, sdaily_available, sguest_swipes, sdining_dollars, slast_swipe;
     vector <string> row;
@@ -258,6 +335,13 @@ vector<string> Student::vectorize(){
 };
 
 
+/* *************************************************
+* Class Name: Outsider
+* Description: Creates an Outsider (non-student) and allows them to enter the Fresh using their Payment Cards (just a demo)
+* Functions Parameters: card number, name
+* What is returned, if anything: NA
+* *************************************************
+*/
 class Outsider
 {
     private:
@@ -277,6 +361,13 @@ class Outsider
 };
 
 
+/* *************************************************
+* Function Name: charge_meal
+* Function Description: Returns the price depending on time for breakfast, lunch, and dinner.
+* Function Parameters: NA
+* What is returned, if anything: int: price
+* *************************************************
+*/
 int charge_meal(){
     Date current_time = Date("now");
     string hours = current_time.getHour();
@@ -285,7 +376,7 @@ int charge_meal(){
     if (thour<11){
         return breakfast_price;
     }
-    else if (thour >=11 && thour <4){
+    else if (thour >=11 && thour <16){
         return lunch_price;
     }
     else{

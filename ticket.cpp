@@ -1,10 +1,14 @@
+/* ***************************************************************
+* Objectives/Description: A ticket management system that could be an alternative to one used in Fresh Food Company at the USM.
+*                         Supports two plans currently: Unlimited Plan and Limited Plan. Plan features might not be what Fresh Food offer.
+* Input: student or guest check-in. Student Id for students and card details for outsiders.
+* Output: Status of the account for students. Confirmation for purchase or entrance, or denial of entrance.
+* ***************************************************************
+*/
 
 #include "ticket.h"
-#include <vector>
-#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
 
 using namespace std;
 
@@ -12,9 +16,16 @@ using namespace std;
 void student_entrance();
 void guest_entrance();
 vector <vector <string>> read_csv(string filename);
-void saveToFile(vector<vector<string>>& data, string filename);
+void save_csv(vector<vector<string>>& data, string filename);
 
 
+/* *************************************************
+* Function Name: main
+* Function Description: Shows the menu for students and guests.
+* Function Parameters: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 int main(){
     char response = 'q';
 
@@ -47,7 +58,13 @@ int main(){
 }
 
 
-
+/* *************************************************
+* Function Name: student_entrance
+* Function Description: allows students to enter their details and use or deny their swipes
+* Function Parameters: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 void student_entrance(){
     string wid;
     cout << "Enter Your Student ID: ";
@@ -96,29 +113,45 @@ void student_entrance(){
 
         row = student.vectorize();
         student_data.at(student_index) = row;
-        saveToFile(student_data, "student_data.csv");
+        save_csv(student_data, "student_data.csv");
     }
     else{
         cout << "Student is not in the database." << endl;
     }
     
-
-
 }
+
+
+/* *************************************************
+* Function Name: guest_entrance
+* Function Description: allows guests to enter the Fresh using their payment card.
+* Function Parameters: NA
+* Paramter type, name and use: NA
+* What is returned, if anything: NA
+* *************************************************
+*/
 
 void guest_entrance(){
     long number;
-            string uname;
+    string uname;
 
-            cout << "Enter Your Card Number: ";
-            cin >> number;
-            cout << "Enter Your Name: ";
-            cin >> uname;
+    cout << "Enter Your Card Number: ";
+    cin >> number;
+    cout << "Enter Your Name: ";
+    cin >> uname;
 
-            Outsider(number,uname).make_purchase();
+    Outsider(number,uname).make_purchase();
 }
 
 
+/* *************************************************
+* Function Name: read_csv
+* Function Description: reads the given csv file into a 2D vector.
+* Function Parameters: filename
+* Paramter type, name and use: string
+* What is returned, if anything: vector
+* *************************************************
+*/
 vector<vector<string>> read_csv(string filename){
     ifstream input_file(filename);
 
@@ -146,7 +179,15 @@ vector<vector<string>> read_csv(string filename){
     
 }
 
-void saveToFile(vector<vector<string>>& data, string filename) {
+/* *************************************************
+* Function Name: save_csv
+* Function Description: saves the given 2D vector into csv file
+* Function Parameters: data, filename
+* Paramter type, name and use: vector data, string filename
+* What is returned, if anything: NA
+* *************************************************
+*/
+void save_csv(vector<vector<string>>& data, string filename) {
     ofstream output_file(filename);
 
     if (!output_file) {
